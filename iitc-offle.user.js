@@ -4,6 +4,8 @@
 // @category   	Misc
 // @version    	0.4.1
 // @namespace  	https://github.com/vrabcak/iitc-offle
+// @updateURL  	https://github.com/MarekKnapek/iitc-offle/raw/master/iitc-offle.user.js
+// @downloadURL	https://github.com/MarekKnapek/iitc-offle/raw/master/iitc-offle.user.js
 // @description	Offle
 // @include    	https://www.ingress.com/intel*
 // @include    	http://www.ingress.com/intel*
