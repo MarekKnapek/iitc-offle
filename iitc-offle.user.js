@@ -58,6 +58,8 @@ function wrapper(plugin_info) {
 
 	offle.addPortal = function (guid, name, latLng, mission) {
 
+		if(!name || name == "") return;
+
 		var notInDb = guid && !(guid in offle.portalDb);
 		var newName = name && offle.portalDb[guid] && !offle.portalDb[guid].name;
 
@@ -132,7 +134,30 @@ function wrapper(plugin_info) {
 	offle.mapDataRefreshEnd = function () {
 		if (offle.dirtyDb) {
 			//console.log("Storing new portals to localStorage");
-			localStorage.setItem('portalDb', JSON.stringify(offle.portalDb));
+			//localStorage.setItem('portalDb', JSON.stringify(offle.portalDb));
+
+			var db2 = {};
+			var keys = Object.keys(offle.portalDb);
+			var len = keys.length;
+			for(i = 0; i != len; ++i){
+				var key = keys[i];
+				var obj = offle.portalDb[key];
+				if(
+					obj.hasOwnProperty("name") && obj["name"] && obj["name"] != "" && obj["name"] != key &&
+					obj.hasOwnProperty("mission") &&
+					obj.hasOwnProperty("lat") &&
+					obj.hasOwnProperty("lng")
+				){
+					obj2 = {};
+					obj2["name"] = obj["name"];
+					obj2["mission"] = obj["mission"];
+					obj2["lat"] = obj["lat"];
+					obj2["lng"] = obj["lng"];
+					db2[key] = obj2;
+				}
+			}
+			localStorage.setItem('portalDb', JSON.stringify(db2));
+			offle.portalDb = db2;
 		}
 		offle.dirtyDb = false;
 	};
