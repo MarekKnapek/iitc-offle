@@ -144,12 +144,7 @@ function wrapper(plugin_info) {
 			for(i = 0; i != len; ++i){
 				var key = keys[i];
 				var obj = offle.portalDb[key];
-				if(
-					obj.hasOwnProperty("name") && obj["name"] && obj["name"] != "" && obj["name"] != key &&
-					obj.hasOwnProperty("mission") &&
-					obj.hasOwnProperty("lat") &&
-					obj.hasOwnProperty("lng")
-				){
+				if(offle.portal_has_all_properties(obj)){
 					obj2 = {};
 					obj2["name"] = obj["name"];
 					obj2["mission"] = obj["mission"];
@@ -162,6 +157,28 @@ function wrapper(plugin_info) {
 			offle.portalDb = db2;
 		}
 		offle.dirtyDb = false;
+	};
+
+	offle.portal_has_all_properties = function(portal)
+	{
+		// (?:[a-f]|\d){32}\.\d{2}
+		var re = /(?:[a-f]|\d){32}\.\d{2}/;
+		if(portal.hasOwnProperty("name")){
+			if(portal["name"]){
+				if(portal["name"] != ""){
+					if(portal["name"].match(re) === null){
+						if(portal.hasOwnProperty("mission")){
+							if(portal.hasOwnProperty("lat")){
+								if(portal.hasOwnProperty("lng")){
+									return true;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return false;
 	};
 
 	offle.setupLayer = function () {
@@ -375,7 +392,6 @@ function wrapper(plugin_info) {
 		};
 		var string_db = prompt("Please paste exported DB from clipboard:", "");
 		if(string_db !== null){
-			//debugger;
 			var portal_db = JSON.parse(string_db);
 			var guids = Object.keys(portal_db);
 			var len = guids.length;
@@ -386,7 +402,7 @@ function wrapper(plugin_info) {
 					continue;
 				}
 				var obj = portal_db[guid];
-				if(!obj.hasOwnProperty("lat") || !obj.hasOwnProperty("lng")) {
+				if(!offle.portal_has_all_properties(obj)){
 					continue;
 				}
 				offle.portalDb[guid] = {"lat":obj.lat,"lng":obj.lng};
@@ -397,6 +413,7 @@ function wrapper(plugin_info) {
 			offle.dirtyDb = true;
 			window.alert("Portals processed: " + len + ", portals added:" + (new_len - old_len) + ".");
 			offle.renderVisiblePortals();
+			offle.mapDataRefreshEnd();
 		}
 	};
 
