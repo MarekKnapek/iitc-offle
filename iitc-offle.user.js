@@ -207,8 +207,8 @@ function wrapper(plugin_info) {
 
 	offle.setupCSS = function () {
 		$("<style>")
-			.prop("type", "text/css")
-			.html('.offle-marker {' +
+		.prop("type", "text/css")
+		.html('.offle-marker {' +
 				'font-size: 30px;' +
 				'color: #FF6200;' +
 				'font-family: monospace;' +
@@ -238,7 +238,7 @@ function wrapper(plugin_info) {
 				'-webkit-text-size-adjust:none;' +
 				'}'
 			)
-			.appendTo("head");
+		.appendTo("head");
 	};
 
 	offle.updatePortalCounter = function () {
@@ -399,18 +399,18 @@ function wrapper(plugin_info) {
 	};
 
 	offle.export = function ()
-		/* FIXME export is terribly slow and hangs the browser, needs some love */
-		{
-			var out = JSON.stringify(offle.portalDb);
-			var html = "<p><a onclick=\"document.getElementById(&quot;offleexport&quot;).select();\">Select all</a> and press CTRL+C to copy it.</p>" +
-				"<textarea readonly id=\"offleexport\" onclick=\"document.getElementById(&quot;offleexport&quot;).select();\" style=\"width:96%; height:250px; resize:vertical;\">" +
-				out + "</textarea>";
-			window.dialog({
-				html: html,
-				width: 600,
-				title: "Offle export"
-			});
-		};
+	/* FIXME export is terribly slow and hangs the browser, needs some love */
+	{
+		var out = JSON.stringify(offle.portalDb);
+		var html = "<p><a onclick=\"document.getElementById(&quot;offleexport&quot;).select();\">Select all</a> and press CTRL+C to copy it.</p>" +
+			"<textarea readonly id=\"offleexport\" onclick=\"document.getElementById(&quot;offleexport&quot;).select();\" style=\"width:96%; height:250px; resize:vertical;\"></textarea>";
+		window.dialog({
+			html: html,
+			width: 600,
+			title: "Offle export"
+		});
+		document.getElementById("offleexport").textContent = out;
+	};
 
 	offle.import = function () {
 		// (?:[a-f]|\d){32}\.\d{2}
@@ -459,10 +459,10 @@ function wrapper(plugin_info) {
 		var db = JSON.parse(localStorage.getItem('portalDb'));
 		if (db) {
 			localforage.setItem('portalDb', db)
-				.then(function () {
-					console.log('Offle: Db migrated');
-					localStorage.removeItem('portalDb');
-				});
+			.then(function () {
+				console.log('Offle: Db migrated');
+				localStorage.removeItem('portalDb');
+			});
 		}
 
 		//load portals from local storage
