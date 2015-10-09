@@ -412,42 +412,112 @@ function wrapper(plugin_info) {
 		document.getElementById("offleexport").textContent = out;
 	};
 
-	offle.import = function () {
-		// (?:[a-f]|\d){32}\.\d{2}
+	offle.import = function(){
+
 		var re = /(?:[a-f]|\d){32}\.\d{2}/;
-		var is_guid = function (guid) {
+		var is_guid = function(guid){
 			//return guid.search(re) !== -1;
 			return guid.match(re) !== null;
-			//return true;
 		};
-		var string_db = prompt("Please paste exported DB from clipboard:", "");
-		if (string_db !== null) {
-			var portal_db = JSON.parse(string_db);
-			var guids = Object.keys(portal_db);
+
+		var import_offle = function(json_db){
+			var ret = 0;
+			var guids = Object.keys(json_db);
 			var len = guids.length;
-			var old_len = Object.keys(offle.portalDb).length;
-			for (var i = 0; i != len; ++i) {
+			for(var i = 0; i != len; ++i){
 				var guid = guids[i];
-				if (!is_guid(guid)) {
+				if(!is_guid(guid)){
 					continue;
 				}
-				var obj = portal_db[guid];
+				var obj = json_db[guid];
 				if(!offle.portal_has_all_properties(obj)){
 					continue;
 				}
+				++ret;
 				offle.portalDb[guid] = {
 					"lat": obj.lat,
-					"lng": obj.lng
+					"lng": obj.lng,
+					"name": obj.name,
+					"mission": obj.mission
 				};
-				offle.portalDb[guid].name = obj.name;
-				offle.portalDb[guid].mission = obj.mission;
 			}
-			var new_len = Object.keys(offle.portalDb).length;
-			offle.dirtyDb = true;
-			window.alert("Portals processed: " + len + ", portals added:" + (new_len - old_len) + ".");
-			offle.renderVisiblePortals();
-			offle.mapDataRefreshEnd();
+
+			return ret;
+		};
+
+		var import_cerebro = function(json_db){
+			var ret = 0;
+			var keys = Object.keys(json_db);
+			var len = keys.length;
+			for(var i = 0; i != len; ++i){
+				var guid = keys[i];
+				if(!is_guid(guid)){
+					continue;
+				}
+				var obj = json_db[guid];
+				if(!obj.hasOwnProperty("guid")){
+					continue;
+				}
+				var guid2 = obj.guid;
+				if(!is_guid(guid2)){
+					continue;
+				}
+				if(!obj.hasOwnProperty("title")){
+					continue;
+				}
+				var title = obj.title;
+				if(!title || title == ""){
+					continue;
+				}
+				if(!obj.hasOwnProperty("lat")){
+					continue;
+				}
+				if(!obj.hasOwnProperty("lng")){
+					continue;
+				}
+				var lat = obj.lat;
+				var lng = obj.lng;
+				++ret;
+				if(offle.portalDb.hasOwnProperty(guid)){
+					offle.portalDb[guid].lat = lat;
+					offle.portalDb[guid].lng = lng;
+					offle.portalDb[guid].name = title;
+				}else{
+					offle.portalDb[guid] = {
+						"lat": lat,
+						"lng": lng,
+						"name": title
+					};
+				}
+			}
+			return ret;
+		};
+
+		var old_len = Object.keys(offle.portalDb).length;
+		var ret_offle = 0;
+		var ret_cerebro = 0;
+
+		var string_db = window.prompt("Please paste exported DB from clipboard:", "");
+		if(string_db !== null){
+			var json_db;
+			try{
+				json_db = JSON.parse(string_db);
+				ret_offle = import_offle(json_db);
+				ret_ccerebro = import_cerebro(json_db);
+			}catch(err){
+				// SyntaxError
+				window.alert("JSON parsing error:\n" + err.message);
+				return;
+			}
 		}
+
+		var len = ret_offle + ret_cerebro;
+		var new_len = Object.keys(offle.portalDb).length;
+		offle.dirtyDb = true;
+		offle.mapDataRefreshEnd();
+		offle.renderVisiblePortals();
+
+		window.alert("Portals processed: " + len + ", portals added:" + (new_len - old_len) + ".");
 	};
 
 	var setup = function () {
