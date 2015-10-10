@@ -503,7 +503,7 @@ function wrapper(plugin_info) {
 			try{
 				json_db = JSON.parse(string_db);
 				ret_offle = import_offle(json_db);
-				ret_ccerebro = import_cerebro(json_db);
+				ret_cerebro = import_cerebro(json_db);
 			}catch(err){
 				// SyntaxError
 				window.alert("JSON parsing error:\n" + err.message);
