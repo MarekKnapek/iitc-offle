@@ -507,10 +507,9 @@ function wrapper(plugin_info) {
 				++portals;
 				if(offle.portalDb.hasOwnProperty(guid)){
 					if(
-						offle.portalDb[guid].lat != obj.lat ||
-						offle.portalDb[guid].lng != obj.lng ||
-						offle.portalDb[guid].name != obj.name ||
-						offle.portalDb[guid].mission != obj.mission
+						offle.portalDb[guid].lat != lat ||
+						offle.portalDb[guid].lng != lng ||
+						offle.portalDb[guid].name != title
 					){
 						++updated;
 					}
