@@ -43,18 +43,33 @@ function wrapper(plugin_info) {
 			data.portal.getLatLng(),
 			data.portal.options.data.mission
 		);
+		offle.portalDetailsUpdated(data);
 	};
 
-	// Always update portal data if displayed in sidebar (to handle e.g. moved portals)
+	// Always update portal data (to handle portal move, rename, ...)
 	offle.portalDetailsUpdated = function (data) {
-		var guid = data.portal.options.guid,
-			name = data.portal.options.data.title;
-		if (name) { //update data only with portals with full details
-			offle.portalDb[guid] = data.portal.getLatLng();
-			offle.portalDb[guid].name = data.portal.options.data.title;
-			offle.portalDb[guid].mission = data.portal.options.data.mission;
-			offle.renderVisiblePortals();
-			localforage.setItem('portalDb', offle.portalDb);
+		var guid = data.portal.options.guid;
+		var name = data.portal.options.data.title;
+		if(name && name != ""){ //update data only with portals with full details
+			if(offle.portalDb.hasOwnProperty(guid)){
+				var lat = data.portal.getLatLng().lat;
+				var lng = data.portal.getLatLng().lng;
+				if(
+					offle.portalDb[guid].lat != lat ||
+					offle.portalDb[guid].lng != lng ||
+					offle.portalDb[guid].name != data.portal.options.data.title ||
+					offle.portalDb[guid].mission != data.portal.options.data.mission
+				){
+					offle.portalDb[guid].lat = lat;
+					offle.portalDb[guid].lng = lng;
+					offle.portalDb[guid].name = data.portal.options.data.title;
+					offle.portalDb[guid].mission = data.portal.options.data.mission;
+
+					offle.dirtyDb = true;
+					offle.mapDataRefreshEnd();
+					offle.renderVisiblePortals();
+				}
+			}
 		}
 	};
 
