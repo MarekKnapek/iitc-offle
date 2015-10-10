@@ -66,8 +66,7 @@ function wrapper(plugin_info) {
 					offle.portalDb[guid].mission = data.portal.options.data.mission;
 
 					offle.dirtyDb = true;
-					offle.mapDataRefreshEnd();
-					offle.renderVisiblePortals();
+					offle.renderPortal(guid);
 				}
 			}
 		}
@@ -486,7 +485,7 @@ function wrapper(plugin_info) {
 					continue;
 				}
 				var guid2 = obj.guid;
-				if(!is_guid(guid2)){
+				if(guid2 != guid){
 					continue;
 				}
 				if(!obj.hasOwnProperty("title")){
