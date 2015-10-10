@@ -421,7 +421,8 @@ function wrapper(plugin_info) {
 		};
 
 		var import_offle = function(json_db){
-			var ret = 0;
+			var portals = 0;
+			var updated = 0;
 			var guids = Object.keys(json_db);
 			var len = guids.length;
 			for(var i = 0; i != len; ++i){
@@ -433,7 +434,17 @@ function wrapper(plugin_info) {
 				if(!offle.portal_has_all_properties(obj)){
 					continue;
 				}
-				++ret;
+				++portals;
+				if(offle.portalDb.hasOwnProperty(guid)){
+					if(
+						offle.portalDb[guid].lat != obj.lat ||
+						offle.portalDb[guid].lng != obj.lng ||
+						offle.portalDb[guid].name != obj.name ||
+						offle.portalDb[guid].mission != obj.mission
+					){
+						++updated;
+					}
+				}
 				offle.portalDb[guid] = {
 					"lat": obj.lat,
 					"lng": obj.lng,
@@ -442,11 +453,12 @@ function wrapper(plugin_info) {
 				};
 			}
 
-			return ret;
+			return [portals, updated];
 		};
 
 		var import_cerebro = function(json_db){
-			var ret = 0;
+			var portals = 0;
+			var updated = 0;
 			var keys = Object.keys(json_db);
 			var len = keys.length;
 			for(var i = 0; i != len; ++i){
@@ -477,8 +489,16 @@ function wrapper(plugin_info) {
 				}
 				var lat = obj.lat;
 				var lng = obj.lng;
-				++ret;
+				++portals;
 				if(offle.portalDb.hasOwnProperty(guid)){
+					if(
+						offle.portalDb[guid].lat != obj.lat ||
+						offle.portalDb[guid].lng != obj.lng ||
+						offle.portalDb[guid].name != obj.name ||
+						offle.portalDb[guid].mission != obj.mission
+					){
+						++updated;
+					}
 					offle.portalDb[guid].lat = lat;
 					offle.portalDb[guid].lng = lng;
 					offle.portalDb[guid].name = title;
@@ -490,12 +510,12 @@ function wrapper(plugin_info) {
 					};
 				}
 			}
-			return ret;
+			return [portals, updated];
 		};
 
 		var old_len = Object.keys(offle.portalDb).length;
-		var ret_offle = 0;
-		var ret_cerebro = 0;
+		var ret_offle = [0, 0];
+		var ret_cerebro = [0, 0];
 
 		var string_db = window.prompt("Please paste exported DB from clipboard:", "");
 		if(string_db !== null){
@@ -511,13 +531,14 @@ function wrapper(plugin_info) {
 			}
 		}
 
-		var len = ret_offle + ret_cerebro;
+		var portals = ret_offle[0] + ret_cerebro[0];
+		var updated = ret_offle[1] + ret_cerebro[1];
 		var new_len = Object.keys(offle.portalDb).length;
 		offle.dirtyDb = true;
 		offle.mapDataRefreshEnd();
 		offle.renderVisiblePortals();
 
-		window.alert("Portals processed: " + len + ", portals added:" + (new_len - old_len) + ".");
+		window.alert("Portals processed: " + portals + ", portals updated: " + updated + ", portals added: " + (new_len - old_len) + ".");
 	};
 
 	var setup = function () {
