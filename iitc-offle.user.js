@@ -2,7 +2,7 @@
 // @id         	iitc-plugin-offle
 // @name       	IITC plugin: offle
 // @category   	Misc
-// @version    	0.6.4
+// @version    	0.6.5
 // @namespace  	https://github.com/vrabcak/iitc-offle
 // @updateURL  	https://github.com/MarekKnapek/iitc-offle/raw/master/iitc-offle.user.js
 // @downloadURL	https://github.com/MarekKnapek/iitc-offle/raw/master/iitc-offle.user.js
